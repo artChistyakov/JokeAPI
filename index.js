@@ -14,6 +14,9 @@ const server = http.createServer((req, res) =>{
     if (req.url.startsWith('/like')) {
         like(req, res);
     }
+    if (req.url.startsWith('/dislike')) {
+        dislike(req, res);
+    }
 });
 
 function getAllJokes (req, res) {
@@ -48,6 +51,37 @@ function addJoke(req, res) {
         res.end();
     });
 
+}
+function like (req, res) {
+    const BaseUrl = 'http://' + req.headers.host;
+    let myUrl = new URL(req.url, BaseUrl);
+    let id = myUrl.searchParams.get('id');
+    if (id) {
+        let filePath = path.join(dataPath, id+'.json');
+        let file = fs.readFileSync(filePath);
+        let jokeJSON = Buffer.from(file).toString();
+        let joke = JSON.parse(jokeJSON)
+
+        joke.like++;
+        fs.writeFileSync(filePath, JSON.stringify(joke))
+    }
+    res.end();
+}
+
+function dislike (req, res) {
+    const BaseUrl = 'http://' + req.headers.host;
+    let myUrl = new URL(req.url, BaseUrl);
+    let id = myUrl.searchParams.get('id');
+    if (id) {
+        let filePath = path.join(dataPath, id+'.json');
+        let file = fs.readFileSync(filePath);
+        let jokeJSON = Buffer.from(file).toString();
+        let joke = JSON.parse(jokeJSON)
+
+        joke.dislike++;
+        fs.writeFileSync(filePath, JSON.stringify(joke))
+    }
+    res.end();
 }
 function like (req, res) {
     const BaseUrl = 'http://' + req.headers.host;
